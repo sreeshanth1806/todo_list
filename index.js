@@ -1,11 +1,13 @@
 const express = require("express");
 
 const app = express();
- // Serve static files from the "public" directory
+
+// Serve static files from the "public" directory
+app.use(express.static("public"));
 
 // Set EJS as the view engine
 app.set("view engine", "ejs");
-app.use(express.static("public"));
+
 // Middleware to parse URL-encoded form data
 app.use(express.urlencoded({ extended: true }));
 
@@ -26,7 +28,8 @@ app.post("/", function (req, res) {
     res.redirect("/"); // Redirect back to homepage
 });
 
-// Start server
-app.listen(4000, function () {
-    console.log("Server started on http://localhost:4000");
+// Start server with dynamic port for Render
+const PORT = process.env.PORT || 4000;
+app.listen(PORT, '0.0.0.0', function () {
+    console.log(`Server started on port ${PORT}`);
 });
