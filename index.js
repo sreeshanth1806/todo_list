@@ -1,35 +1,62 @@
 const express = require("express");
-
 const app = express();
 
-// Serve static files from the "public" directory
+// Serve static files from "public" directory
 app.use(express.static("public"));
 
-// Set EJS as the view engine
+// Set EJS as view engine
 app.set("view engine", "ejs");
 
 // Middleware to parse URL-encoded form data
 app.use(express.urlencoded({ extended: true }));
 
-// Array to store tasks
+// Store tasks
 let items = [];
 
-// GET route for homepage
-app.get("/", function (req, res) {
-    res.render("list", { ejes: items }); // Pass items as ejes
+// GET: Homepage
+app.get("/", (req, res) => {
+    res.render("list", { tasks: items });
 });
 
-// POST route to handle form submission
-app.post("/", function (req, res) {
-    const item = req.body.task; // Access the input field with name="task"
-    if (item.trim() !== "") { // Only push if not empty
-        items.push(item);
+// POST: Add new task
+app.post("/", (req, res) => {
+    const { task, priority } = req.body;
+
+    if (task.trim() === "") {
+        return res.status(400).send("<script>alert('Task cannot be empty!'); window.history.back();</script>");
     }
-    res.redirect("/"); // Redirect back to homepage
+
+    items.push({
+        id: Date.now(),
+        name: task,
+        priority: priority || "Normal"
+    });
+
+    res.redirect("/");
 });
 
-// Start server with dynamic port for Render
+// POST: Delete task
+app.post("/delete", (req, res) => {
+    const id = parseInt(req.body.id);
+    items = items.filter(item => item.id !== id);
+    res.redirect("/");
+});
+
+// POST: Edit task
+app.post("/edit", (req, res) => {
+    const { id, updatedTask, updatedPriority } = req.body;
+    const taskIndex = items.findIndex(item => item.id === parseInt(id));
+
+    if (taskIndex !== -1 && updatedTask.trim() !== "") {
+        items[taskIndex].name = updatedTask;
+        items[taskIndex].priority = updatedPriority; // Update priority
+    }
+
+    res.redirect("/");
+});
+
+// Start server
 const PORT = process.env.PORT || 4000;
-app.listen(PORT, '0.0.0.0', function () {
-    console.log(`Server started on port ${PORT}`);
+app.listen(PORT, '0.0.0.0', () => {
+    console.log(`Server running on port ${PORT}`);
 });
