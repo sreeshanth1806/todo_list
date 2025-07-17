@@ -29,26 +29,15 @@
         <% } %>
 
         <% tasks.forEach((task) => { %>
-            <div class="item">
-                <!-- Delete Form -->
-                <form action="/delete" method="POST" class="inline-form">
-                    <input type="hidden" name="id" value="<%= task.id %>">
-                    <button type="submit" class="delete-btn">🗑️</button>
-                </form>
-
-                <!-- Edit Form -->
-                <form action="/edit" method="POST" class="inline-form">
-                    <input type="hidden" name="id" value="<%= task.id %>">
-                    <input type="text" name="updatedTask" value="<%= task.name %>" required>
-                    <select name="updatedPriority">
-                        <option value="High" <%= task.priority === "High" ? "selected" : "" %>>High</option>
-                        <option value="Medium" <%= task.priority === "Medium" ? "selected" : "" %>>Medium</option>
-                        <option value="Normal" <%= task.priority === "Normal" ? "selected" : "" %>>Normal</option>
-                    </select>
-                    <button type="submit" class="edit-btn">✏️</button>
-                </form>
-
-                <span class="priority <%= task.priority.toLowerCase() %>">[<%= task.priority %>]</span>
+            <div class="item" data-id="<%= task.id %>">
+                <input type="text" value="<%= task.name %>" class="edit-task" />
+                <select class="edit-priority">
+                    <option value="High" <%= task.priority === "High" ? "selected" : "" %>>High</option>
+                    <option value="Medium" <%= task.priority === "Medium" ? "selected" : "" %>>Medium</option>
+                    <option value="Normal" <%= task.priority === "Normal" ? "selected" : "" %>>Normal</option>
+                </select>
+                <button class="save-btn">💾</button>
+                <button class="delete-btn">🗑️</button>
             </div>
         <% }); %>
     </div>
@@ -56,5 +45,37 @@
     <footer>
         <p>&copy; 2025 My Todo List</p>
     </footer>
+
+    <script>
+        document.querySelectorAll(".save-btn").forEach(button => {
+            button.addEventListener("click", async (e) => {
+                const parent = e.target.closest(".item");
+                const id = parent.dataset.id;
+                const updatedTask = parent.querySelector(".edit-task").value;
+                const updatedPriority = parent.querySelector(".edit-priority").value;
+
+                await fetch(`/edit/${id}`, {
+                    method: "PUT",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ updatedTask, updatedPriority })
+                });
+
+                window.location.reload();
+            });
+        });
+
+        document.querySelectorAll(".delete-btn").forEach(button => {
+            button.addEventListener("click", async (e) => {
+                const parent = e.target.closest(".item");
+                const id = parent.dataset.id;
+
+                await fetch(`/delete/${id}`, {
+                    method: "DELETE"
+                });
+
+                window.location.reload();
+            });
+        });
+    </script>
 </body>
 </html>

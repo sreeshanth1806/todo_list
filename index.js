@@ -7,8 +7,9 @@ app.use(express.static("public"));
 // Set EJS as view engine
 app.set("view engine", "ejs");
 
-// Middleware to parse URL-encoded form data
+// Middleware to parse JSON and URL-encoded form data
 app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
 
 // Store tasks
 let items = [];
@@ -35,24 +36,25 @@ app.post("/", (req, res) => {
     res.redirect("/");
 });
 
-// POST: Delete task
-app.post("/delete", (req, res) => {
-    const id = parseInt(req.body.id);
-    items = items.filter(item => item.id !== id);
-    res.redirect("/");
-});
-
-// POST: Edit task
-app.post("/edit", (req, res) => {
-    const { id, updatedTask, updatedPriority } = req.body;
+// PUT: Edit task
+app.put("/edit/:id", (req, res) => {
+    const { id } = req.params;
+    const { updatedTask, updatedPriority } = req.body;
     const taskIndex = items.findIndex(item => item.id === parseInt(id));
 
     if (taskIndex !== -1 && updatedTask.trim() !== "") {
         items[taskIndex].name = updatedTask;
-        items[taskIndex].priority = updatedPriority; // Update priority
+        items[taskIndex].priority = updatedPriority;
+        return res.status(200).json({ success: true });
     }
+    res.status(400).json({ success: false, message: "Invalid task update" });
+});
 
-    res.redirect("/");
+// DELETE: Delete task
+app.delete("/delete/:id", (req, res) => {
+    const { id } = req.params;
+    items = items.filter(item => item.id !== parseInt(id));
+    res.status(200).json({ success: true });
 });
 
 // Start server
