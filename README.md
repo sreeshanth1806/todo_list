@@ -1,86 +1,101 @@
-# 🚀 Render Express Deployment
+# 📋 Todo List Web Application
 
-[![Node.js](https://img.shields.io/badge/Node.js-339933?logo=node.js&logoColor=white)](https://nodejs.org/)  
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)  
-[![Deploy on Render](https://img.shields.io/badge/Deploy-Render-blue?logo=render&logoColor=white)](https://render.com/)  
+A simple and dynamic Todo List app built with **Node.js**, **Express**, **MongoDB Atlas**, and **EJS**.
 
-This project demonstrates how to deploy a **Node.js Express application** on [Render](https://render.com). It's a simple Express server setup that can be used as a starting point for deploying backend applications.
+This project allows users to **add, edit, and delete tasks** with priorities like *Urgent*, *High*, and *Low*. Tasks are stored persistently in MongoDB Atlas and displayed dynamically on the frontend.
 
 ---
 
-## 📂 Project Structure
-render-express-deployment/
-├── index.js
-├── package.json
+## 🚀 Features
+
+✅ Add new tasks with priority levels  
+✅ Edit existing tasks inline  
+✅ Delete tasks dynamically  
+✅ Alerts for task actions (created, updated, deleted)  
+✅ Persistent data storage using MongoDB Atlas  
+✅ Responsive and clean UI  
+
+---
+
+## 🛠 Technologies Used
+
+- **Backend:** Node.js, Express.js  
+- **Frontend:** EJS, HTML, CSS  
+- **Database:** MongoDB Atlas (cloud database)  
+- **Version Control:** Git & GitHub  
+
+---
+
+## 🗂️ Folder Structure
+
+todo_list/
+├── models/
+│ └── Task.js # Mongoose schema for tasks
 ├── public/
+│ └── css/
+│ └── styles.css # Stylesheet
 ├── views/
-└── README.md
+│ └── list.ejs # EJS template
+├── index.js # Main server file
+├── package.json # Project dependencies
+└── .gitignore
 
 
 ---
 
-## 🌐 Live Demo
-👉 [View Deployed App](https://to-do-list-m3rv.onrender.com/)  
+## 📦 Setup Instructions
 
----
-
-## ⚙️ Getting Started
-
-### Prerequisites
-- [Node.js](https://nodejs.org/) installed
-- A GitHub account
-
----
-
-### 🖥 Running Locally
-
-1. **Clone the repository:**
+### 🔥 Run Locally
+1. Clone the repository:
    ```bash
-   git clone https://github.com/sreeshanth1806/render-express-deployment.git
-   cd render-express-deployment
+   git clone https://github.com/sreeshanth1806/todo_list.git
+   cd todo_list
 
 npm install
+
+mongoose.connect("YOUR_MONGODB_URI", {...})
+
 node index.js
 http://localhost:4000
 
-🚀 Deployment on Render
-Go to Render.
 
-Click “New Web Service”.
+---
 
-Connect your GitHub repository.
+### ✅ What to Do:
+1. Save this content as **`README.md`** in your project folder.  
+2. Add and commit it:  
+   ```bash
+   git add README.md
+   git commit -m "Added professional README"
+   git push origin main
 
-Set these configurations:
+
+🌐 Deployment on Render
+This app is live on Render!
+
+🌟 Steps to Deploy:
+Fork this repository (if needed).
+
+Go to Render and log in.
+
+Click “New Web Service” → Connect your GitHub repo.
+
+Fill in:
 
 Build Command: npm install
 
 Start Command: node index.js
 
-Click “Deploy”.
+Environment: Node
 
-Your app will be live with a public URL.
+Region: Select closest (e.g., Asia)
 
-📜 License
-This project is licensed under the MIT License.
+Add Environment Variable:
 
+Key: MONGODB_URI
 
----
+Value: (your MongoDB Atlas connection string)
 
-### ✅ What changed?  
-- **Added badges**:
-  - 🟢 Node.js
-  - 📄 MIT License
-  - 🌐 Deploy on Render  
-- Made the README look cleaner and professional.
+Click Deploy.
 
----
-
-### 🛠 Next Steps  
-1. Replace the existing `README.md` in your project with this one.  
-2. Save it and push to GitHub:  
-
-```bash
-git add README.md
-git commit -m "Updated README with badges and details"
-git push origin main
-
+🔗 Live App URL: https://todo-list-on-render.com 
