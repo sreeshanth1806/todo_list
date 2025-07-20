@@ -11,13 +11,27 @@
         <h1>📋 My Todo List</h1>
     </header>
 
+    <!-- ✅ Alert for Task Created -->
+    <% if (typeof success !== "undefined" && success === "created") { %>
+        <script>
+            // Show success alert
+            alert("✅ Task created successfully!");
+
+            // Remove ?success=created from the URL
+            if (window.history.replaceState) {
+                const cleanUrl = window.location.origin + window.location.pathname;
+                window.history.replaceState({}, document.title, cleanUrl);
+            }
+        </script>
+    <% } %>
+
     <div class="box">
-        <form action="/" method="POST" class="add-task-form">
-            <input type="text" name="task" placeholder="Enter a new task" required>
+        <form action="/" method="POST" class="add-task-form" onsubmit="return validateForm()">
+            <input type="text" name="task" placeholder="Enter a new task">
             <select name="priority">
+                <option value="Urgent">Urgent</option>
                 <option value="High">High</option>
-                <option value="Medium">Medium</option>
-                <option value="Normal" selected>Normal</option>
+                <option value="Low" selected>Low</option>
             </select>
             <button type="submit">+</button>
         </form>
@@ -26,20 +40,20 @@
     <div class="box">
         <% if (tasks.length === 0) { %>
             <p class="empty-message">No tasks added yet!</p>
+        <% } else { %>
+            <% tasks.forEach((task) => { %>
+                <div class="item" data-id="<%= task._id %>">
+                    <input type="text" value="<%= task.name %>" class="edit-task" />
+                    <select class="edit-priority">
+                        <option value="Urgent" <%= task.priority === "Urgent" ? "selected" : "" %>>Urgent</option>
+                        <option value="High" <%= task.priority === "High" ? "selected" : "" %>>High</option>
+                        <option value="Low" <%= task.priority === "Low" ? "selected" : "" %>>Low</option>
+                    </select>
+                    <button type="button" class="edit-btn">✏️</button>
+                    <button type="button" class="delete-btn">🗑️</button>
+                </div>
+            <% }); %>
         <% } %>
-
-        <% tasks.forEach((task) => { %>
-            <div class="item" data-id="<%= task.id %>">
-                <input type="text" value="<%= task.name %>" class="edit-task" />
-                <select class="edit-priority">
-                    <option value="High" <%= task.priority === "High" ? "selected" : "" %>>High</option>
-                    <option value="Medium" <%= task.priority === "Medium" ? "selected" : "" %>>Medium</option>
-                    <option value="Normal" <%= task.priority === "Normal" ? "selected" : "" %>>Normal</option>
-                </select>
-                <button class="save-btn">💾</button>
-                <button class="delete-btn">🗑️</button>
-            </div>
-        <% }); %>
     </div>
 
     <footer>
@@ -47,33 +61,60 @@
     </footer>
 
     <script>
-        document.querySelectorAll(".save-btn").forEach(button => {
+        // Alert on empty task submission
+        function validateForm() {
+            const taskInput = document.querySelector('input[name="task"]');
+            if (taskInput.value.trim() === "") {
+                alert("⚠️ Task cannot be empty!");
+                return false;
+            }
+            return true;
+        }
+
+        // Edit Task
+        document.querySelectorAll(".edit-btn").forEach(button => {
             button.addEventListener("click", async (e) => {
                 const parent = e.target.closest(".item");
                 const id = parent.dataset.id;
-                const updatedTask = parent.querySelector(".edit-task").value;
+                const updatedTask = parent.querySelector(".edit-task").value.trim();
                 const updatedPriority = parent.querySelector(".edit-priority").value;
 
-                await fetch(`/edit/${id}`, {
+                if (updatedTask === "") {
+                    alert("⚠️ Task cannot be empty!");
+                    return;
+                }
+
+                const response = await fetch(`/edit/${id}`, {
                     method: "PUT",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ updatedTask, updatedPriority })
                 });
 
-                window.location.reload();
+                if (response.ok) {
+                    alert("✅ Task updated successfully!");
+                    window.location.reload();
+                } else {
+                    alert("❌ Error updating task.");
+                }
             });
         });
 
+        // Delete Task
         document.querySelectorAll(".delete-btn").forEach(button => {
             button.addEventListener("click", async (e) => {
                 const parent = e.target.closest(".item");
                 const id = parent.dataset.id;
 
-                await fetch(`/delete/${id}`, {
+                const response = await fetch(`/delete/${id}`, {
                     method: "DELETE"
                 });
 
-                window.location.reload();
+                if (response.ok) {
+                    alert("🗑️ Task deleted successfully!");
+                    window.location.reload();
+                } else {
+                    alert("❌ Error deleting task.");
+                }
             });
         });
     </script>

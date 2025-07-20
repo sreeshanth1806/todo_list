@@ -1,63 +1,81 @@
 const express = require("express");
+const mongoose = require("mongoose");
+const Task = require("./models/Task"); // Import Task model
 const app = express();
 
-// Serve static files from "public" directory
+// ✅ Connect to MongoDB Atlas
+mongoose.connect("mongodb+srv://todo_user:todo1234@cluster0.vxkaide.mongodb.net/todo_list?retryWrites=true&w=majority", {
+    useNewUrlParser: true,
+    useUnifiedTopology: true
+})
+.then(() => console.log("✅ Connected to MongoDB Atlas"))
+.catch(err => console.error("❌ MongoDB connection error:", err));
+
+// ✅ Middleware
 app.use(express.static("public"));
-
-// Set EJS as view engine
 app.set("view engine", "ejs");
-
-// Middleware to parse JSON and URL-encoded form data
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
-// Store tasks
-let items = [];
-
-// GET: Homepage
-app.get("/", (req, res) => {
-    res.render("list", { tasks: items });
+// ✅ Routes
+app.get("/", async (req, res) => {
+    try {
+        const tasks = await Task.find();
+        res.render("list", { 
+            tasks, 
+            success: req.query.success
+        });
+    } catch (err) {
+        console.error(err);
+        res.status(500).send("Error loading tasks");
+    }
 });
 
-// POST: Add new task
-app.post("/", (req, res) => {
+app.post("/", async (req, res) => {
     const { task, priority } = req.body;
-
     if (task.trim() === "") {
         return res.status(400).send("<script>alert('Task cannot be empty!'); window.history.back();</script>");
     }
-
-    items.push({
-        id: Date.now(),
-        name: task,
-        priority: priority || "Normal"
-    });
-
-    res.redirect("/");
+    const newTask = new Task({ name: task, priority: priority || "Low" });
+    try {
+        await newTask.save();
+        res.redirect("/?success=created");
+    } catch (err) {
+        console.error(err);
+        res.status(500).send("Error saving task");
+    }
 });
 
-// PUT: Edit task
-app.put("/edit/:id", (req, res) => {
+app.put("/edit/:id", async (req, res) => {
     const { id } = req.params;
     const { updatedTask, updatedPriority } = req.body;
-    const taskIndex = items.findIndex(item => item.id === parseInt(id));
-
-    if (taskIndex !== -1 && updatedTask.trim() !== "") {
-        items[taskIndex].name = updatedTask;
-        items[taskIndex].priority = updatedPriority;
-        return res.status(200).json({ success: true });
+    if (updatedTask.trim() === "") {
+        return res.status(400).json({ success: false, message: "Task cannot be empty" });
     }
-    res.status(400).json({ success: false, message: "Invalid task update" });
+    try {
+        await Task.findByIdAndUpdate(id, {
+            name: updatedTask,
+            priority: updatedPriority
+        });
+        res.status(200).json({ success: true });
+    } catch (err) {
+        console.error(err);
+        res.status(400).json({ success: false, message: "Error updating task" });
+    }
 });
 
-// DELETE: Delete task
-app.delete("/delete/:id", (req, res) => {
+app.delete("/delete/:id", async (req, res) => {
     const { id } = req.params;
-    items = items.filter(item => item.id !== parseInt(id));
-    res.status(200).json({ success: true });
+    try {
+        await Task.findByIdAndDelete(id);
+        res.status(200).json({ success: true });
+    } catch (err) {
+        console.error(err);
+        res.status(400).json({ success: false, message: "Error deleting task" });
+    }
 });
 
-// Start server
+// ✅ Start server
 const PORT = process.env.PORT || 4000;
 app.listen(PORT, '0.0.0.0', () => {
     console.log(`Server running on port ${PORT}`);

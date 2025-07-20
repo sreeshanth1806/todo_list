@@ -8,10 +8,20 @@
   },
   "author": "",
   "license": "ISC",
-  "description": "",
+  "description": "[![Node.js](https://img.shields.io/badge/Node.js-339933?logo=node.js&logoColor=white)](https://nodejs.org/)  \r [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)  \r [![Deploy on Render](https://img.shields.io/badge/Deploy-Render-blue?logo=render&logoColor=white)](https://render.com/)",
   "dependencies": {
     "body-parser": "^2.2.0",
     "ejs": "^3.1.10",
-    "express": "^5.1.0"
-  }
+    "express": "^5.1.0",
+    "mongoose": "^8.16.4"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sreeshanth1806/render-express-deployment.git"
+  },
+  "keywords": [],
+  "bugs": {
+    "url": "https://github.com/sreeshanth1806/render-express-deployment/issues"
+  },
+  "homepage": "https://github.com/sreeshanth1806/render-express-deployment#readme"
 }
