@@ -1,6 +1,6 @@
 const express = require("express");
 const mongoose = require("mongoose");
-const Task = require("./models/Task"); // Import Task model
+const Task = require("./models/Task");
 const app = express();
 
 // ✅ Connect to MongoDB Atlas
@@ -21,8 +21,8 @@ app.use(express.json());
 app.get("/", async (req, res) => {
     try {
         const tasks = await Task.find();
-        res.render("list", { 
-            tasks, 
+        res.render("list", {
+            tasks,
             success: req.query.success
         });
     } catch (err) {
@@ -33,10 +33,17 @@ app.get("/", async (req, res) => {
 
 app.post("/", async (req, res) => {
     const { task, priority } = req.body;
-    if (task.trim() === "") {
+
+    // ✅ Server-side required field validation
+    if (!task || task.trim() === "") {
         return res.status(400).send("<script>alert('Task cannot be empty!'); window.history.back();</script>");
     }
-    const newTask = new Task({ name: task, priority: priority || "Low" });
+
+    const newTask = new Task({
+        name: task.trim(),
+        priority: priority || "Low"
+    });
+
     try {
         await newTask.save();
         res.redirect("/?success=created");
@@ -49,12 +56,15 @@ app.post("/", async (req, res) => {
 app.put("/edit/:id", async (req, res) => {
     const { id } = req.params;
     const { updatedTask, updatedPriority } = req.body;
-    if (updatedTask.trim() === "") {
+
+    // ✅ Validation for updated task
+    if (!updatedTask || updatedTask.trim() === "") {
         return res.status(400).json({ success: false, message: "Task cannot be empty" });
     }
+
     try {
         await Task.findByIdAndUpdate(id, {
-            name: updatedTask,
+            name: updatedTask.trim(),
             priority: updatedPriority
         });
         res.status(200).json({ success: true });
@@ -78,5 +88,5 @@ app.delete("/delete/:id", async (req, res) => {
 // ✅ Start server
 const PORT = process.env.PORT || 4000;
 app.listen(PORT, '0.0.0.0', () => {
-    console.log(`Server running on port ${PORT}`);
+    console.log(`🚀 Server running on port ${PORT}`);
 });

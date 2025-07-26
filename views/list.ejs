@@ -11,13 +11,10 @@
         <h1>📋 My Todo List</h1>
     </header>
 
-    <!-- ✅ Alert for Task Created -->
+    <!-- ✅ Task Created Alert -->
     <% if (typeof success !== "undefined" && success === "created") { %>
         <script>
-            // Show success alert
             alert("✅ Task created successfully!");
-
-            // Remove ?success=created from the URL
             if (window.history.replaceState) {
                 const cleanUrl = window.location.origin + window.location.pathname;
                 window.history.replaceState({}, document.title, cleanUrl);
@@ -26,8 +23,9 @@
     <% } %>
 
     <div class="box">
+        <!-- ✅ Form with HTML5 validation + JS validation -->
         <form action="/" method="POST" class="add-task-form" onsubmit="return validateForm()">
-            <input type="text" name="task" placeholder="Enter a new task">
+            <input type="text" name="task" placeholder="Enter a new task" required minlength="1">
             <select name="priority">
                 <option value="Urgent">Urgent</option>
                 <option value="High">High</option>
@@ -61,7 +59,7 @@
     </footer>
 
     <script>
-        // Alert on empty task submission
+        // ✅ JS validation (extra layer)
         function validateForm() {
             const taskInput = document.querySelector('input[name="task"]');
             if (taskInput.value.trim() === "") {
@@ -71,7 +69,7 @@
             return true;
         }
 
-        // Edit Task
+        // ✅ Edit task
         document.querySelectorAll(".edit-btn").forEach(button => {
             button.addEventListener("click", async (e) => {
                 const parent = e.target.closest(".item");
@@ -99,7 +97,7 @@
             });
         });
 
-        // Delete Task
+        // ✅ Delete task
         document.querySelectorAll(".delete-btn").forEach(button => {
             button.addEventListener("click", async (e) => {
                 const parent = e.target.closest(".item");
